@@ -1,9 +1,14 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
-group = 'it.polimi.ingsw'
+group = 'com.interpreter'
 version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'com.interpreter.Main'
+}
 
 repositories {
     mavenCentral()
