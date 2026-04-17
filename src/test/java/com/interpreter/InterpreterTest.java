@@ -89,4 +89,72 @@ public class InterpreterTest {
         assertEquals(2, env.get("x"));
         assertEquals(3, env.get("y"));
     }
+
+
+    @Test
+    void testIfWithoutElse() {
+        // Condition is false and there is no else branch — variable should remain unchanged
+        Map<String, Integer> env = run("""
+            x = 5
+            y = 0
+            if x > 10 then y = 100
+            """);
+        assertEquals(5, env.get("x"));
+        assertEquals(0, env.get("y"));
+    }
+
+    @Test
+    void testNestedFunctions() {
+        // A function that calls another function
+        Map<String, Integer> env = run("""
+            fun double(n) { return n * 2 }
+            fun quadruple(n) { return double(double(n)) }
+            result = quadruple(3)
+            """);
+        assertEquals(12, env.get("result"));
+    }
+
+    @Test
+    void testNegativeArithmetic() {
+        // Subtraction resulting in a negative value
+        Map<String, Integer> env = run("""
+            x = 3
+            y = x - 10
+            """);
+        assertEquals(3, env.get("x"));
+        assertEquals(-7, env.get("y"));
+    }
+
+    @Test
+    void testWhileFalseFromStart() {
+        // While condition is false from the start — body should never execute
+        Map<String, Integer> env = run("""
+            x = 5
+            y = 0
+            while x < 3 do y = 99
+            """);
+        assertEquals(5, env.get("x"));
+        assertEquals(0, env.get("y"));
+    }
+
+    @Test
+    void testMultipleAssignments() {
+        // Same variable reassigned multiple times — only last value should remain
+        Map<String, Integer> env = run("""
+            x = 1
+            x = 2
+            x = 3
+            """);
+        assertEquals(3, env.get("x"));
+    }
+
+    @Test
+    void testCommentOnly() {
+        // Program with only comments — no variables should be produced
+        Map<String, Integer> env = run("""
+            // this program does nothing
+            // just comments
+            """);
+        assertEquals(0, env.size());
+    }
 }
