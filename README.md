@@ -71,19 +71,36 @@ x = 2  // inline comment
 
 ---
 
-## Language Design Decisions
+## ## Language Design Decisions
 
-The task provides sample programs but no formal specification. The following decisions were made to fill the gaps:
+The task provides sample programs but no formal specification. The following decisions were made to resolve ambiguities, each with explicit reasoning.
 
-- **Integer-only values.** All values are integers. There are no floats, strings, or booleans.
-- **`true` is `1`.** The keyword `true` evaluates to `1`. Conditions are truthy if non-zero, falsy if zero — consistent with C semantics.
-- **Local scope in functions.** Variables assigned inside a function body are local to that call and do not affect the global environment. Parameters are also local.
-- **Global variables only in output.** At program termination, only global variables are printed. Function-local variables and function definitions are not included in the output.
-- **Alphabetical output order.** Variables are printed in alphabetical order, since the task does not specify an order. This ensures deterministic, readable output.
-- **Comma as statement separator.** Multiple statements inside `{}` bodies or after `do` are separated by `,`. This is inferred directly from the sample programs.
-- **No `for`, `switch`, or unary operators.** These constructs do not appear in the sample programs and are not supported.
-- **Single-line comments with `//`.** Chosen as a natural extension consistent with the Java/C family syntax style of the language.
+**Integer-only values.**
+All values are integers. The sample programs contain no floats, strings, or booleans. Introducing additional types would require type inference or type annotations — neither of which appears in the syntax. Integers are the minimal and consistent choice.
 
+**`true` evaluates to `1`.**
+The keyword `true` appears in `fact_iter` as a while condition. Since the language has no boolean type, `true` is treated as the integer `1`. Conditions are truthy if non-zero and falsy if zero — consistent with C semantics, which is the closest family to this language's syntax.
+
+**Local scope in functions.**
+Variables assigned inside a function body are local to that call and do not affect the global environment. This is the standard semantics for any language with functions — without it, recursive functions would corrupt their own state across calls (e.g. `n` in `fact_rec` would be overwritten at every recursion level).
+
+**Only global variables are printed at termination.**
+The sample programs show only top-level variables in the output, never function-local variables or function names. Printing locals would expose internal function state that has no meaning outside the call. Function definitions are stored separately and never included in the output.
+
+**Alphabetical output order.**
+The task does not specify an output order. Alphabetical order was chosen because it is deterministic, reproducible, and independent of execution order — making the output predictable regardless of how variables are assigned.
+
+**Comma as statement separator.**
+Multiple statements inside `{}` bodies or after `do` are separated by `,`. This is inferred directly from the sample programs (e.g. `fact_iter`) and is the only unambiguous separator that does not conflict with other syntax elements.
+
+**`if` without `else` is a no-op when the condition is false.**
+The task shows `if/then/else` but does not show `if/then` alone. The natural resolution is that a missing `else` branch simply does nothing — consistent with every major imperative language.
+
+**Single-line comments with `//`.**
+Comments are not shown in the sample programs but are a practical necessity for any real program. `//` was chosen because it is consistent with the Java/C family syntax that the language already resembles (braces, arithmetic operators, function syntax). This is an explicit extension beyond the sample programs.
+
+**Unsupported constructs.**
+`for` loops, `switch` statements, and unary operators (e.g. `-x`, `!x`) do not appear in the sample programs and are not implemented. The language is intentionally minimal — only the constructs demonstrated in the samples are supported.
 ---
 
 ## How to Build and Run
@@ -124,8 +141,9 @@ y: 8
 ./gradlew test
 ```
 
-All 13 test cases are included in `InterpreterTest.java`, covering:
-- Simple assignment and arithmetic
+All 17 test cases are included across two test classes:
+
+**`InterpreterTest.java`** — 13 tests covering all sample programs and corner cases:- Simple assignment and arithmetic
 - If/then/else
 - While with nested if and comma-separated body
 - Function calls
@@ -138,6 +156,12 @@ All 13 test cases are included in `InterpreterTest.java`, covering:
 - While loop with condition false from the start (body never executes)
 - Multiple reassignments of the same variable
 - Program consisting entirely of comments (empty output)
+
+**`ErrorHandlingTest.java`** — 4 tests covering error cases:
+- Unexpected token in parser (incomplete assignment)
+- Undefined variable at runtime
+- Undefined function call
+- Unrecognized character in lexer
 
 ---
 
