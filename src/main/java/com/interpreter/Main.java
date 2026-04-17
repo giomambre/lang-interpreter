@@ -17,19 +17,24 @@ public class Main {
             source.append(scanner.nextLine()).append("\n");
         }
 
-        // Lexer → Parser → Interpreter pipeline
-        Lexer lexer = new Lexer(source.toString());
-        List<Token> tokens = lexer.tokenize();
+        try {
+            // Lexer → Parser → Interpreter pipeline
+            Lexer lexer = new Lexer(source.toString());
+            List<Token> tokens = lexer.tokenize();
 
-        Parser parser = new Parser(tokens);
-        List<Stmt> stmts = parser.parse();
+            Parser parser = new Parser(tokens);
+            List<Stmt> stmts = parser.parse();
 
-        Interpreter interpreter = new Interpreter();
-        Map<String, Integer> result = interpreter.interpret(stmts);
+            Interpreter interpreter = new Interpreter();
+            Map<String, Integer> result = interpreter.interpret(stmts);
 
-        // Print variables in alphabetical order, excluding function definitions
-        new TreeMap<>(result).forEach((name, value) ->
-                System.out.println(name + ": " + value)
-        );
+            // Print variables in alphabetical order, excluding function definitions
+            new TreeMap<>(result).forEach((name, value) ->
+                    System.out.println(name + ": " + value)
+            );
+        } catch (RuntimeException e) {
+            System.err.println("Error: " + e.getMessage());
+            System.exit(1);
+        }
     }
 }
