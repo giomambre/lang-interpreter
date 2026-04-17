@@ -71,7 +71,7 @@ x = 2  // inline comment
 
 ---
 
-## ## Language Design Decisions
+## Language Design Decisions
 
 The task provides sample programs but no formal specification. The following decisions were made to resolve ambiguities, each with explicit reasoning.
 
