@@ -78,4 +78,15 @@ public class InterpreterTest {
                 """);
         assertEquals(120, env.get("b"));
     }
+
+    @Test
+    void testComments() {
+        Map<String, Integer> env = run("""
+            // this is a comment
+            x = 2  // inline comment
+            y = x + 1
+            """);
+        assertEquals(2, env.get("x"));
+        assertEquals(3, env.get("y"));
+    }
 }

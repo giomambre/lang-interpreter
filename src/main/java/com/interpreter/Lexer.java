@@ -82,8 +82,14 @@ public class Lexer {
                 case '+' -> tokens.add(new Token(TokenType.PLUS, null));
                 case '-' -> tokens.add(new Token(TokenType.MINUS, null));
                 case '*' -> tokens.add(new Token(TokenType.STAR, null));
-                case '/' -> tokens.add(new Token(TokenType.SLASH, null));
-                case '(' -> tokens.add(new Token(TokenType.LPAREN, null));
+                case '/' -> {
+                    // check for single-line comment '//'
+                    if (peek() == '/') {
+                        while (pos < source.length() && peek() != '\n') advance();
+                    } else {
+                        tokens.add(new Token(TokenType.SLASH, null));
+                    }
+                }                case '(' -> tokens.add(new Token(TokenType.LPAREN, null));
                 case ')' -> tokens.add(new Token(TokenType.RPAREN, null));
                 case '{' -> tokens.add(new Token(TokenType.LBRACE, null));
                 case '}' -> tokens.add(new Token(TokenType.RBRACE, null));
